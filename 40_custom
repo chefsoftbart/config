@@ -1,0 +1,36 @@
+#!/bin/sh
+exec tail -n +3 $0
+# This file provides an easy way to add custom menu entries.  Simply type the
+# menu entries you want to add after this comment.  Be careful not to change
+# the 'exec tail' line above.
+
+menuentry "Arch Linux" {
+        insmod part_gpt
+        insmod ext2
+	search --no-floppy --set=root  --fs-uuid 2b718772-f30a-4a3b-8168-3b9134c766c2
+	linux /vmlinuz-linux-lts root=UUID=ecc5f814-4133-4784-8abd-fe9ce8374a41 lsm=landlock,lockdown,yama,apparmor,bpf
+        initrd /amd-ucode.img /initramfs-linux-lts.img
+
+
+
+}
+
+menuentry 'Windows Boot Manager (on /dev/nvme0n1p1)' --class windows --class os $menuentry_id_option 'osprober-efi-0E7D-523F' {
+	insmod part_gpt
+	insmod fat
+	if [ x$feature_platform_search_hint = xy ]; then
+	  search --no-floppy --fs-uuid --set=root  0E7D-523F
+	else
+	  search --no-floppy --fs-uuid --set=root 0E7D-523F
+	fi
+	chainloader /EFI/Microsoft/Boot/bootmgfw.efi
+}
+menuentry "System restart" {
+        echo "System rebooting..."
+        reboot
+}
+
+menuentry "System shutdown" {
+        echo "System shutting down..."
+        halt
+}
